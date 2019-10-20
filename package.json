@@ -4,12 +4,13 @@
   "description": "node demo",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon app"
   },
   "author": "liuwu",
   "license": "ISC",
   "dependencies": {
     "koa": "^2.10.0",
+    "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0"
   },
   "devDependencies": {
