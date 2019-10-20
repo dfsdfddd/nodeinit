@@ -4,7 +4,8 @@
   "description": "node demo",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app"
+    "pro": "NODE_ENV=pro node app",
+    "dev": "nodemon app"
   },
   "author": "liuwu",
   "license": "ISC",
@@ -12,6 +13,7 @@
     "koa": "^2.10.0",
     "koa-bodyparser": "^4.2.1",
     "koa-json-error": "^3.1.2",
+    "koa-parameter": "^3.0.1",
     "koa-router": "^7.4.0"
   },
   "devDependencies": {
