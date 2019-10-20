@@ -3,9 +3,14 @@ class UserCtl {
   find(ctx){
     // 设置响应头部
     // ctx.set("Allow","GET,POST")
+    // a.b 500
     ctx.body = db
   }
   findbyId(ctx){
+    
+    if(ctx.params.id*1>=db.length){
+      ctx.throw(412,'先决条件失败，id不存在')
+    }
     ctx.body = db[ctx.params.id*1]
   }
   create(ctx){
