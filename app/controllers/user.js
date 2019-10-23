@@ -1,3 +1,5 @@
+const jsonwebtoken = require('jsonwebtoken')
+const {secret} = require('../config')
 const User = require('../models/users')
 
 class UserCtl {
@@ -15,13 +17,26 @@ class UserCtl {
   async create(ctx){
     ctx.verifyParams({
       name:{type:"string",required:true},
+      pass:{type:"string",required:true}
     })
+    const {name} = ctx.request.body;
+    const isRepeatUser = await User.findOne({name})
+    if(isRepeatUser){
+      ctx.throw(409,'用户已存在')
+    }
     const user = await new User(ctx.request.body).save()
     ctx.body = user
   }
+
+  async checkOwer(ctx,next){
+    if(ctx.params.id !== ctx.state.user._id){ctx.throw(403,'没有权限')}
+    await next()
+  }
+
   async update(ctx) {
     ctx.verifyParams({
-      name:{type:"string",required:true},
+      name:{type:"string",required:false},
+      pass:{type:"string",required:false}
     })
     const user = await User.findByIdAndUpdate(ctx.params.id,ctx.request.body)
     if(!user){ctx.throw(404,'用不不存在')}
@@ -31,6 +46,17 @@ class UserCtl {
     const user  = await User.findByIdAndDelete(ctx.params.id)
     if(!user){ctx.throw(404,'用户不存在')}
     ctx.status = 204
+  }
+  async login(ctx){
+    ctx.verifyParams({
+      name:{type:'string',required:true},
+      pass:{type:'string',required:true}
+    })
+    const user =await User.findOne(ctx.request.body)
+    if(!user){ctx.throw(401,'用户名或密码不正确')}
+    const {_id,name} = user;
+    const token = jsonwebtoken.sign({_id,name},secret,{expiresIn:'1d'}) //设置jwttoken和有效期
+    ctx.body = {token}
   }
 }
 
