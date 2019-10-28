@@ -67,6 +67,37 @@ class UserCtl {
     const token = jsonwebtoken.sign({_id,name},secret,{expiresIn:'1d'}) //设置jwttoken和有效期
     ctx.body = {token}
   }
+  async listFollowing(ctx){
+    const user = await User.findById(ctx.params.id).select("+following").populate('following') //根据following里面的id 查询到这个id与其相关的信息
+    if(!user){ctx.throw(404,'用户不存在')}
+    ctx.body = user.following
+  }
+  async listFollowers(ctx){
+    const users = await User.find({following:ctx.params.id})
+    ctx.body = users
+  }
+  async checkUserExist(ctx,next){
+    const user = await User.findById(ctx.params.id)
+    if(!user){ctx.throw(404,'用户不存在')}
+    await next()
+  }
+  async follow(ctx){
+    const me = await User.findById(ctx.state.user._id).select('+following')
+    if(!me.following.map(id=>id.toString()).includes(ctx.params.id)){
+      me.following.push(ctx.params.id)
+      me.save()
+    }
+    ctx.status = 204
+  }
+  async unfollow(ctx){
+    const me = await User.findById(ctx.state.user._id).select('+following')
+    const index = me.following.map(id=>id.toString()).indexOf(ctx.params.id)
+    if(index > -1){
+      me.following.splice(index,1)
+      me.save()
+    }
+    ctx.status = 204
+  }
 }
 
 module.exports = new UserCtl()

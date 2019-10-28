@@ -28,6 +28,10 @@ const userSchema = new Schema({
       graduation_year:{type:Number}
     }],
     select:false
+  },
+  following:{
+    type:[{type:Schema.Types.ObjectId,ref:'User'}], // 引用userid里面的用户信息
+    select:false
   }
 });
 
