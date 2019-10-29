@@ -10,19 +10,19 @@ const userSchema = new Schema({
   avatar_url:{type:String},// 头像
   gender:{type:String,enum:['male','female'],required:true,default:'male'},//性别
   headline:{type:String},// 一句话描述
-  locations:{type:[{type:String}],select:false}, // 多个地方的地址
-  business:{type:String,select:false},//职业
+  locations:{type:[{type:Schema.Types.ObjectId,ref:'Topic'}],select:false}, // 多个地方的地址
+  business:{type:Schema.Types.ObjectId,ref:'Topic',select:false},//职业
   employments:{ //职业经历
     type:[{
-      company:{type:String},
-      job:{type:String},
+      company:{type:Schema.Types.ObjectId,ref:'Topic'},
+      job:{type:Schema.Types.ObjectId,ref:'Topic'},
     }],
     select:false
   },
   educations:{ //教育经历
     type:[{
-      school:{type:String},
-      major:{type:String},
+      school:{type:Schema.Types.ObjectId,ref:'Topic'},
+      major:{type:Schema.Types.ObjectId,ref:'Topic'},
       diploma:{type:Number,enum:[1,2,3,4,5]},
       entrance_year:{type:Number},
       graduation_year:{type:Number}
@@ -31,6 +31,10 @@ const userSchema = new Schema({
   },
   following:{
     type:[{type:Schema.Types.ObjectId,ref:'User'}], // 引用userid里面的用户信息
+    select:false
+  },
+  followingTopics:{
+    type:[{type:Schema.Types.ObjectId,ref:'Topic'}],
     select:false
   }
 });

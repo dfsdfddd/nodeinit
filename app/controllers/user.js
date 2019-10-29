@@ -18,7 +18,17 @@ class UserCtl {
   async findbyId(ctx){
     const {fields = ''} = ctx.query;
     const selectFields = fields.split(';').filter(f=>f).map(f=>" +"+f).join('')
-    const user = await User.findById(ctx.params.id).select(selectFields);
+    const populateStr = fields.split(';').filter(f=>f).map(f=>{
+      if(f === 'employments'){
+        return 'employments.company employments.job'
+      }
+      if(f === 'educations'){
+        return 'educations.school educations.major'
+      }
+      return f
+    }).join(' ')
+    const user = await User.findById(ctx.params.id).select(selectFields)
+    .populate(populateStr);
     if(!user){ctx.throw(404,'用户不存在')};
     ctx.body = user;
   }
@@ -104,6 +114,33 @@ class UserCtl {
     }
     ctx.status = 204
   }
+
+
+
+  async listFollowingTopics(ctx){
+    const user = await User.findById(ctx.params.id).select("+followingTopics").populate('followingTopics') //根据following里面的id 查询到这个id与其相关的信息
+    if(!user){ctx.throw(404,'用户不存在')}
+    ctx.body = user.followingTopics
+  }
+  async followTopics(ctx){
+    const me = await User.findById(ctx.state.user._id).select('+followingTopics')
+    if(!me.followingTopics.map(id=>id.toString()).includes(ctx.params.id)){
+      me.followingTopics.push(ctx.params.id)
+      me.save()
+    }
+    ctx.status = 204
+  }
+  async unfollowTopics(ctx){
+    const me = await User.findById(ctx.state.user._id).select('+followingTopics')
+    const index = me.followingTopics.map(id=>id.toString()).indexOf(ctx.params.id)
+    if(index > -1){
+      me.followingTopics.splice(index,1)
+      me.save()
+    }
+    ctx.status = 204
+  }
+
+
 }
 
 module.exports = new UserCtl()

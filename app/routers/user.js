@@ -2,7 +2,12 @@ const jwt = require('koa-jwt')
 const Router = require('koa-router')
 const router = new Router({prefix:'/users'}) // 前缀方法
 
-const {checkUserExist,listFollowers,find,findbyId,create,update,deleted,login,checkOwer,listFollowing,follow,unfollow} = require("../controllers/user")
+const {checkUserExist,listFollowers,find,findbyId,create,update
+  ,deleted,login,checkOwer,listFollowing,follow,unfollow
+,followTopics,unfollowTopics,listFollowingTopics} = require("../controllers/user")
+
+const {checkTopicExist} = require('../controllers/topic')
+
 const {secret} = require('../config')
 
 // 多中间件
@@ -28,5 +33,9 @@ router.get('/:id/following',listFollowing)
 router.get('/:id/followers',listFollowers)
 router.put('/following/:id',auth,checkUserExist,follow)
 router.delete('/following/:id',auth,checkUserExist,unfollow)
+
+router.get('/:id/followingTopics',listFollowingTopics)
+router.put('/followingTopics/:id',auth,checkTopicExist,followTopics)
+router.delete('/followingTopics/:id',auth,checkTopicExist,unfollowTopics)
 
 module.exports = router;
