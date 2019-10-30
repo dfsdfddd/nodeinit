@@ -1,6 +1,7 @@
 const jsonwebtoken = require('jsonwebtoken')
 const {secret} = require('../config')
 const User = require('../models/users')
+const Question = require('../models/questions')
 
 class UserCtl {
   async find(ctx){
@@ -138,6 +139,10 @@ class UserCtl {
       me.save()
     }
     ctx.status = 204
+  }
+  async listQuestions(ctx){
+    const questions = await Question.find({questioner:ctx.params.id})
+    ctx.body = questions
   }
 
 

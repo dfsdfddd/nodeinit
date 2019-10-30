@@ -4,7 +4,7 @@ const router = new Router({prefix:'/users'}) // 前缀方法
 
 const {checkUserExist,listFollowers,find,findbyId,create,update
   ,deleted,login,checkOwer,listFollowing,follow,unfollow
-,followTopics,unfollowTopics,listFollowingTopics} = require("../controllers/user")
+,followTopics,unfollowTopics,listFollowingTopics,listQuestions} = require("../controllers/user")
 
 const {checkTopicExist} = require('../controllers/topic')
 
@@ -37,5 +37,8 @@ router.delete('/following/:id',auth,checkUserExist,unfollow)
 router.get('/:id/followingTopics',listFollowingTopics)
 router.put('/followingTopics/:id',auth,checkTopicExist,followTopics)
 router.delete('/followingTopics/:id',auth,checkTopicExist,unfollowTopics)
+
+router.get('/:id/questions',listQuestions)
+
 
 module.exports = router;
