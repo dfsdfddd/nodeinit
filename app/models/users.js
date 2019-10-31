@@ -51,6 +51,6 @@ const userSchema = new Schema({
     select:false
   },
 
-});
+},{timestamps:true});
 
 module.exports = model('User',userSchema) //User 为一个集合名称，文档的集合  model 为schema的用户模型

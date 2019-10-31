@@ -8,6 +8,6 @@ const questionSchema = new Schema({
   description:{type:String},
   questioner:{type:Schema.Types.ObjectId,ref:"User",select:false},
   topics:{type:[{type:Schema.Types.ObjectId,ref:'Topic'}],select:false}
-});
+},{timestamps:true});
 
 module.exports = model('Question',questionSchema) //User 为一个集合名称，文档的集合  model 为schema的用户模型
