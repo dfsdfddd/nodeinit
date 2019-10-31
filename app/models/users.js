@@ -36,7 +36,21 @@ const userSchema = new Schema({
   followingTopics:{
     type:[{type:Schema.Types.ObjectId,ref:'Topic'}],
     select:false
-  }
+  },
+
+  linkingAnswers:{
+    type:[{type:Schema.Types.ObjectId,ref:'Answer'}],
+    select:false
+  },
+  dislinkingAnswers:{
+    type:[{type:Schema.Types.ObjectId,ref:'Answer'}],
+    select:false
+  },
+  collectingAnswers:{
+    type:[{type:Schema.Types.ObjectId,ref:'Answer'}],
+    select:false
+  },
+
 });
 
 module.exports = model('User',userSchema) //User 为一个集合名称，文档的集合  model 为schema的用户模型

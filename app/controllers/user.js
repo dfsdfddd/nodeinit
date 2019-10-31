@@ -2,6 +2,8 @@ const jsonwebtoken = require('jsonwebtoken')
 const {secret} = require('../config')
 const User = require('../models/users')
 const Question = require('../models/questions')
+const Answer = require('../models/answers')
+
 
 class UserCtl {
   async find(ctx){
@@ -145,6 +147,83 @@ class UserCtl {
     ctx.body = questions
   }
 
+
+  async listLinkingAnswers(ctx){
+    const user = await User.findById(ctx.params.id).select("+linkingAnswers").populate('linkingAnswers') //根据following里面的id 查询到这个id与其相关的信息
+    if(!user){ctx.throw(404,'用户不存在')}
+    ctx.body = user.linkingAnswers
+  }
+  async linkAnswers(ctx,next){ // params.id 为答案的id
+    const me = await User.findById(ctx.state.user._id).select('+linkingAnswers')
+    if(!me.linkingAnswers.map(id=>id.toString()).includes(ctx.params.id)){
+      me.linkingAnswers.push(ctx.params.id)
+      me.save()
+      await Answer.findByIdAndUpdate(ctx.params.id,{$inc:{voteCount:1}})
+    }
+    ctx.status = 204
+    await next()
+  }
+  async unLinkAnswers(ctx){
+    const me = await User.findById(ctx.state.user._id).select('+linkingAnswers')
+    const index = me.linkingAnswers.map(id=>id.toString()).indexOf(ctx.params.id)
+    if(index > -1){
+      me.linkingAnswers.splice(index,1)
+      me.save()
+      await Answer.findByIdAndUpdate(ctx.params.id,{$inc:{voteCount:-1}})
+
+    }
+    ctx.status = 204
+  }
+
+  async listDisLinkingAnswers(ctx){
+    const user = await User.findById(ctx.params.id).select("+dislinkingAnswers").populate('dislinkingAnswers') //根据following里面的id 查询到这个id与其相关的信息
+    if(!user){ctx.throw(404,'用户不存在')}
+    ctx.body = user.dislinkingAnswers
+  }
+  async disLinkAnswers(ctx,next){ // params.id 为答案的id
+    const me = await User.findById(ctx.state.user._id).select('+dislinkingAnswers')
+    if(!me.dislinkingAnswers.map(id=>id.toString()).includes(ctx.params.id)){
+      me.dislinkingAnswers.push(ctx.params.id)
+      me.save()
+    }
+    ctx.status = 204
+    await next()
+  }
+  async unDisLinkAnswers(ctx){
+    const me = await User.findById(ctx.state.user._id).select('+dislinkingAnswers')
+    const index = me.dislinkingAnswers.map(id=>id.toString()).indexOf(ctx.params.id)
+    if(index > -1){
+      me.dislinkingAnswers.splice(index,1)
+      me.save()
+    }
+    ctx.status = 204
+  }
+
+  async listCollectingAnswers(ctx){
+    const user = await User.findById(ctx.params.id).select("+collectingAnswers").populate('collectingAnswers') //根据following里面的id 查询到这个id与其相关的信息
+    if(!user){ctx.throw(404,'用户不存在')}
+    ctx.body = user.collectingAnswers
+  }
+  async collectAnswers(ctx,next){ // params.id 为答案的id
+    const me = await User.findById(ctx.state.user._id).select('+collectingAnswers')
+    if(!me.collectingAnswers.map(id=>id.toString()).includes(ctx.params.id)){
+      me.collectingAnswers.push(ctx.params.id)
+      me.save()
+    }
+    ctx.status = 204
+    await next()
+  }
+  async unCollectAnswers(ctx){
+    const me = await User.findById(ctx.state.user._id).select('+collectingAnswers')
+    const index = me.collectingAnswers.map(id=>id.toString()).indexOf(ctx.params.id)
+    if(index > -1){
+      me.collectingAnswers.splice(index,1)
+      me.save()
+    }
+    ctx.status = 204
+  }
+
+  
 
 }
 
